@@ -51,6 +51,9 @@ const HIDDEN_SETTINGS_SECTIONS = new Set<SettingsSectionId>([
   // 工作区搜索（.zcodeignore）设置入口先隐藏：规则文件仍生效并可手动编辑，
   // 编辑页代码保留，放开时从这里移除即可。
   "workspaceFileSearch",
+  // Marid (Android)：键盘快捷键设置入口对触屏设备没有意义，故隐藏该分区；
+  // 快捷键 handler（keydown 监听、蓝牙键盘）保持生效，仅隐藏 UI 入口。
+  "shortcuts",
 ]);
 
 export interface SettingsSectionIntentEventDetail {

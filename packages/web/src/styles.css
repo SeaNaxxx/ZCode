@@ -2,3 +2,15 @@
 
 /* 共享样式只扫描 UI 包；Web 独立入口的状态类也必须参与 Tailwind 生成。 */
 @source "./**/*.{ts,tsx}";
+
+/* Marid (Android): hide the Keyboard Shortcuts settings entry from any
+   surface that still renders it (nav items, deep links). The shortcut
+   handlers themselves stay active for Bluetooth keyboards. */
+[data-settings-section-nav="shortcuts"],
+[data-settings-section="keyboard-shortcuts"],
+[data-section="keyboard-shortcuts"],
+[href*="/settings/keyboard-shortcuts"],
+[href*="/settings/shortcuts"],
+[aria-label*="Keyboard Shortcuts"] {
+  display: none !important;
+}

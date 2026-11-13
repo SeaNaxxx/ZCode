@@ -8,6 +8,17 @@ const BUNDLED_PARTITION_FILE = "bundled-marketplace.json";
 const CDN_PARTITION_FILE = "cdn-marketplace.json";
 const MERGED_MARKETPLACE_FILE = "marketplace.json";
 
+// Marid (fork): these official-marketplace entries target desktop game-engine
+// workflows that cannot run on the Android host (no desktop engine toolchains).
+// They are filtered out of the CDN partition before the canonical merge, so
+// they never surface in the plugin store. Bundled plugins are unaffected.
+const MARID_BLOCKED_CDN_PLUGIN_NAMES: ReadonlySet<string> = new Set([
+  "unity",
+  "unreal",
+  "unreal-engine",
+  "godot",
+]);
+
 interface BundledMarketplacePartition {
   manifest: Record<string, unknown>;
   version: 1;
@@ -76,7 +87,10 @@ async function rebuildOfficialMarketplace(storageRoot: string): Promise<Record<s
   const bundledPartition = await readBundledPartition(storageRoot);
   const cdnManifest = await readJsonRecord(partitionPath(storageRoot, CDN_PARTITION_FILE));
   const bundledManifest = bundledPartition?.manifest;
-  const cdnPlugins = readPluginEntries(cdnManifest);
+  const cdnPlugins = readPluginEntries(cdnManifest).filter((plugin) => {
+    const name = readPluginName(plugin);
+    return name === undefined || !MARID_BLOCKED_CDN_PLUGIN_NAMES.has(name.toLowerCase());
+  });
   const cdnPluginNames = new Set(cdnPlugins.map(readPluginName).filter(isDefined));
   const bundledPlugins = readPluginEntries(bundledManifest).filter((plugin) => {
     const name = readPluginName(plugin);
